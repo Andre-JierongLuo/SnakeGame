@@ -11,12 +11,14 @@
 @implementation MyScene{
     NSMutableArray* Body;
     SKSpriteNode* Food;
+    SKLabelNode* myLabel;
     BOOL isUpdatingBody;
     BOOL isGameOver;
     int direction;
     int score;
     int height;
     int width;
+    int speed;
 }
 
 -(id)initWithSize:(CGSize)size {    
@@ -25,20 +27,24 @@
         
         self.backgroundColor = [SKColor colorWithRed:0.15 green:0.15 blue:0.3 alpha:1.0];
         NSLog(@"****** initWithSize ****** %@ ****** \n", NSStringFromCGSize(size));
-        
         height = size.height / 10;
         width = size.width / 10;
         //NSLog(@"%d %d",height,width);
-        
-        if([self children] != nil){
-            [self removeAllChildren];
-        }
+        myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+        myLabel.text = @"Click to Start";
+        myLabel.fontSize = 30;
+        myLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
         [self startGame];
     }
     return self;
 }
 
 -(void)startGame{
+    
+    if([self children] != nil){
+        [self removeAllChildren];
+    }
+    [self addChild:myLabel];
     NSLog(@"***** startGame ****** \n");
     
     // create snake.
@@ -57,11 +63,12 @@
     isUpdatingBody = NO;
     direction = up;
     score = 0;
+    speed = 30;
     
 }
 
 -(void)addFood{
-    Food = [[SKSpriteNode alloc] initWithImageNamed:@"food.png"];
+    Food = [[SKSpriteNode alloc] initWithImageNamed:@"Spaceship.png"];
     [Food setSize:CGSizeMake(10, 10)];
     int x = arc4random()%width;
     int y = arc4random()%height;
@@ -70,27 +77,68 @@
     [self addChild:Food];
 }
 
+-(void)changeFood{
+    int x = arc4random()%width;
+    int y = arc4random()%height;
+    [Food setPosition:CGPointMake(10*x, 10*y)];
+}
+
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
-    /*
+    [myLabel setText:[NSString stringWithFormat:@""]];
+    if(isGameOver){
+        [self startGame];
+    }
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
     for (UITouch *touch in touches) {
         CGPoint location = [touch locationInNode:self];
-        
-        SKSpriteNode *sprite = [SKSpriteNode spriteNodeWithImageNamed:@"Spaceship"];
-        
-        sprite.position = location;
-        
-        SKAction *action = [SKAction rotateByAngle:M_PI duration:1];
-        
-        [sprite runAction:[SKAction repeatActionForever:action]];
-        
-        [self addChild:sprite];
+        [self changeDirection:location];
     }
-     */
+    //UITouch * touch = [touches anyObject];
+    
+}
+
+-(void)changeDirection:(CGPoint)point{
+    SKSpriteNode* head = [Body firstObject];
+    CGPoint headPosition = [head position];
+    if(point.x >= headPosition.x && point.y > headPosition.y){
+        direction = up;
+    }
+    else if(point.x > headPosition.x && point.y <= headPosition.y){
+        direction = right;
+    }
+    else if(point.x < headPosition.x && point.y >= headPosition.y){
+        direction = left;
+    }
+    else if(point.x <= headPosition.x && point.y < headPosition.y){
+        direction = down;
+    }
+    else {}
 }
 
 -(void)update:(CFTimeInterval)currentTime {
-    [self move];
+    static int count = 0;
+    if(score <= 10){
+        speed = 30;
+    }
+    else if(score <= 20){
+        speed = 20;
+    }
+    else if(score <= 30){
+        speed = 10;
+    }
+    else if(score > 30){
+        speed = 0;
+    }
+    else {}
+    
+    count++;
+    if(count >= speed && !isUpdatingBody){
+        [self move];
+        count = 0;
+    }
 }
 
 -(void)move{
@@ -127,16 +175,63 @@
     }
     tail.position = headPosition;
     [self adjustBody];
+    [self State];
+    [self didSnakeEat];
 }
 
 -(void)adjustBody{
     isUpdatingBody = YES;
     
-    SKSpriteNode * tail = [Body lastObject];
+    SKSpriteNode* tail = [Body lastObject];
     [Body removeLastObject];
     [Body insertObject:tail atIndex:0];
     
     isUpdatingBody = NO;
+}
+
+-(void)State{
+    SKSpriteNode* head = [Body firstObject];
+    for (int i = 1; i < [Body count]; i++) {
+        SKSpriteNode* node = [Body objectAtIndex:i];
+        if (CGRectIntersectsRect(head.frame, node.frame)) {
+            [myLabel setText:[NSString stringWithFormat:@"Click to Start again."]];
+            isGameOver = YES;
+        }
+    }
+}
+
+-(void)didSnakeEat{
+    SKSpriteNode* head = [Body firstObject];
+    if(CGRectIntersectsRect(head.frame, Food.frame)){
+        SKSpriteNode* tail = [Body lastObject];
+        CGPoint tailPosition = [tail position];
+        switch (direction) {
+            case right:
+                tailPosition.x -= 10;
+                break;
+            case left:
+                tailPosition.x += 10;
+                break;
+            case up:
+                tailPosition.y -= 10;
+                break;
+            case down:
+                tailPosition.y += 10;
+                break;
+            default:
+                break;
+        }
+        [self addNode:tailPosition];
+        [self changeFood];
+    }
+}
+
+-(void)addNode:(CGPoint)point{
+    SKSpriteNode* node = [[SKSpriteNode alloc] initWithImageNamed:@"body.png"];
+    [node setSize:CGSizeMake(10, 10)];
+    [node setPosition:point];
+    [self addChild:node];
+    [Body addObject:node];
 }
 
 @end
