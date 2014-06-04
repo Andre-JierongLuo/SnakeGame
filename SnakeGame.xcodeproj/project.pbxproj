@@ -24,6 +24,8 @@
 		65902E2D193F595B00716D5D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65902E08193F595A00716D5D /* UIKit.framework */; };
 		65902E35193F595B00716D5D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 65902E33193F595B00716D5D /* InfoPlist.strings */; };
 		65902E37193F595B00716D5D /* SnakeGameTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 65902E36193F595B00716D5D /* SnakeGameTests.m */; };
+		65902E42193F659800716D5D /* body.png in Resources */ = {isa = PBXBuildFile; fileRef = 65902E40193F659800716D5D /* body.png */; };
+		65902E43193F659800716D5D /* food.png in Resources */ = {isa = PBXBuildFile; fileRef = 65902E41193F659800716D5D /* food.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,8 @@
 		65902E32193F595B00716D5D /* SnakeGameTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SnakeGameTests-Info.plist"; sourceTree = "<group>"; };
 		65902E34193F595B00716D5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		65902E36193F595B00716D5D /* SnakeGameTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SnakeGameTests.m; sourceTree = "<group>"; };
+		65902E40193F659800716D5D /* body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = body.png; sourceTree = "<group>"; };
+		65902E41193F659800716D5D /* food.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = food.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +133,8 @@
 				65902E1E193F595B00716D5D /* MyScene.h */,
 				65902E1F193F595B00716D5D /* MyScene.m */,
 				65902E21193F595B00716D5D /* Spaceship.png */,
+				65902E40193F659800716D5D /* body.png */,
+				65902E41193F659800716D5D /* food.png */,
 				65902E23193F595B00716D5D /* Images.xcassets */,
 				65902E0D193F595A00716D5D /* Supporting Files */,
 			);
@@ -241,9 +247,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				65902E11193F595A00716D5D /* InfoPlist.strings in Resources */,
+				65902E42193F659800716D5D /* body.png in Resources */,
 				65902E24193F595B00716D5D /* Images.xcassets in Resources */,
 				65902E22193F595B00716D5D /* Spaceship.png in Resources */,
 				65902E1A193F595A00716D5D /* Main.storyboard in Resources */,
+				65902E43193F659800716D5D /* food.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,6 +480,7 @@
 				65902E3C193F595B00716D5D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		65902E3D193F595B00716D5D /* Build configuration list for PBXNativeTarget "SnakeGameTests" */ = {
 			isa = XCConfigurationList;
@@ -480,6 +489,7 @@
 				65902E3F193F595B00716D5D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
