@@ -12,9 +12,13 @@
     NSMutableArray* Body;
     SKSpriteNode* Food;
     SKLabelNode* myLabel;
+    SKSpriteNode *upButton;
+    SKSpriteNode *downButton;
+    SKSpriteNode *rightButton;
+    SKSpriteNode *leftButton;
     BOOL isUpdatingBody;
     BOOL isGameOver;
-    int direction;
+    Direction direction;
     int score;
     int height;
     int width;
@@ -32,8 +36,31 @@
         //NSLog(@"%d %d",height,width);
         myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         myLabel.text = @"Click to Start";
-        myLabel.fontSize = 30;
+        myLabel.fontSize = 20;
         myLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
+        
+        upButton = [[SKSpriteNode alloc] initWithImageNamed:@"food.png"];
+        [upButton setSize:CGSizeMake(40, 40)];
+        [upButton setPosition:CGPointMake(160, 140)];
+        [upButton setName:@"upButton"];
+        
+        downButton = [[SKSpriteNode alloc] initWithImageNamed:@"food.png"];
+        [downButton setSize:CGSizeMake(40, 40)];
+        [downButton setPosition:CGPointMake(160, 50)];
+        [downButton setName:@"downButton"];
+        
+        rightButton = [[SKSpriteNode alloc] initWithImageNamed:@"food.png"];
+        [rightButton setSize:CGSizeMake(40, 40)];
+        [rightButton setPosition:CGPointMake(230, 100)];
+        [rightButton setName:@"rightButton"];
+        
+        leftButton = [[SKSpriteNode alloc] initWithImageNamed:@"food.png"];
+        [leftButton setSize:CGSizeMake(40, 40)];
+        [leftButton setPosition:CGPointMake(90, 100)];
+        [leftButton setName:@"leftButton"];
+        
+        Food = [[SKSpriteNode alloc] initWithImageNamed:@"Spaceship.png"];
+        
         [self startGame];
     }
     return self;
@@ -45,6 +72,11 @@
         [self removeAllChildren];
     }
     [self addChild:myLabel];
+    [self addChild:upButton];
+    [self addChild:downButton];
+    [self addChild:rightButton];
+    [self addChild:leftButton];
+    
     NSLog(@"***** startGame ****** \n");
     
     // create snake.
@@ -53,7 +85,7 @@
     for(int i = 0; i < 3; i++){
         SKSpriteNode* node = [[SKSpriteNode alloc] initWithImageNamed:@"body.png"];
         [node setSize:CGSizeMake(10, 10)];
-        [node setPosition:CGPointMake(40-10*i,40)];
+        [node setPosition:CGPointMake(40-10*i,210)];
         [self addChild:node];
         [Body addObject:node];
     }
@@ -61,14 +93,13 @@
     [self addFood];
     isGameOver = NO;
     isUpdatingBody = NO;
-    direction = up;
+    direction = right;
     score = 0;
-    speed = 30;
+    speed = 15;
     
 }
 
 -(void)addFood{
-    Food = [[SKSpriteNode alloc] initWithImageNamed:@"Spaceship.png"];
     [Food setSize:CGSizeMake(10, 10)];
     int x = arc4random()%width;
     int y = arc4random()%height;
@@ -76,12 +107,13 @@
     [Food setPosition:CGPointMake(10*x, 10*y)];
     [self addChild:Food];
 }
-
+/*
 -(void)changeFood{
     int x = arc4random()%width;
     int y = arc4random()%height;
     [Food setPosition:CGPointMake(10*x, 10*y)];
 }
+ */
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
@@ -92,42 +124,67 @@
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    for (UITouch *touch in touches) {
-        CGPoint location = [touch locationInNode:self];
-        [self changeDirection:location];
+
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInNode:self];
+    SKNode *node = [self nodeAtPoint:location];
+    if ([node.name isEqualToString:@"upButton"]) {
+        [self changeDirectionToUp];
     }
-    //UITouch * touch = [touches anyObject];
+    else if ([node.name isEqualToString:@"downButton"]) {
+        [self changeDirectionToDown];
+    }
+    else if ([node.name isEqualToString:@"rightButton"]) {
+        [self changeDirectionToRight];
+    }
+    else if ([node.name isEqualToString:@"leftButton"]) {
+        [self changeDirectionToLeft];
+    }
+    else{}
     
 }
 
--(void)changeDirection:(CGPoint)point{
-    SKSpriteNode* head = [Body firstObject];
-    CGPoint headPosition = [head position];
-    if(point.x >= headPosition.x && point.y > headPosition.y){
+-(void)changeDirectionToUp{
+    if(direction == down){}
+    else {
         direction = up;
     }
-    else if(point.x > headPosition.x && point.y <= headPosition.y){
-        direction = right;
-    }
-    else if(point.x < headPosition.x && point.y >= headPosition.y){
-        direction = left;
-    }
-    else if(point.x <= headPosition.x && point.y < headPosition.y){
+}
+
+-(void)changeDirectionToDown{
+    if(direction == up){}
+    else {
         direction = down;
     }
-    else {}
+}
+
+-(void)changeDirectionToRight{
+    if(direction == left){}
+    else {
+        direction = right;
+    }
+}
+
+-(void)changeDirectionToLeft{
+    if(direction == right){}
+    else {
+        direction = left;
+    }
 }
 
 -(void)update:(CFTimeInterval)currentTime {
+    if(isGameOver){
+        return;
+    }
     static int count = 0;
     if(score <= 10){
-        speed = 30;
+        speed = 15;
     }
     else if(score <= 20){
-        speed = 20;
+        speed = 10;
     }
     else if(score <= 30){
-        speed = 10;
+        speed = 5;
     }
     else if(score > 30){
         speed = 0;
@@ -203,6 +260,7 @@
 -(void)didSnakeEat{
     SKSpriteNode* head = [Body firstObject];
     if(CGRectIntersectsRect(head.frame, Food.frame)){
+        [Food removeFromParent];
         SKSpriteNode* tail = [Body lastObject];
         CGPoint tailPosition = [tail position];
         switch (direction) {
@@ -222,7 +280,7 @@
                 break;
         }
         [self addNode:tailPosition];
-        [self changeFood];
+        [self addFood];
     }
 }
 
